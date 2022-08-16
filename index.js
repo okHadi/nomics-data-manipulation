@@ -5,7 +5,7 @@ const app = express()
 const Datastore = require('nedb')
 const db = new Datastore({ filename: 'nomics.db', autoload: true })
 
-const nomicsKey = 'c38eac6daa61ad3cf7ee2b882e8c54581b6a885a'
+const nomicsKey = ''        //add your own key
 
 app.use(express.json({ limit: '50mb' }));         //parses incoming requests with JSON payloads
 app.use(express.urlencoded({ extended: true }))     //recognize the incoming Request Object as strings or arrays
