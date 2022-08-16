@@ -7,6 +7,9 @@ const db = new Datastore({ filename: 'nomics.db', autoload: true })
 
 const nomicsKey = 'c38eac6daa61ad3cf7ee2b882e8c54581b6a885a'
 
+app.use(express.json({ limit: '50mb' }));         //parses incoming requests with JSON payloads
+app.use(express.urlencoded({ extended: true }))     //recognize the incoming Request Object as strings or arrays
+//YOU NEED BOTH OF THESE IN ORDER TO POST/PATCH/PUT DATA
 // axios
 //     .get("https://api.nomics.com/v1/currencies/ticker?key=" + nomicsKey + "&ids=BTC,ETH,XRP&interval=1d,30d&convert=EUR&per-page=100&page=1")
 //     .then(response => console.log(response))
@@ -22,22 +25,22 @@ async function getDataFromNomics(coinIds) {
     }
 }
 
-// app.post('/:id', async (req, res) => {
-//     try {
-//         const coinId = req.params.id
-//         let insertData = await getDataFromNomics(coinId)
-//         console.log(insertData[0])
-//         db.insert({ "data": insertData[0] }, async (error, addedData) => {
-//             if (error) {
-//                 res.send(error)
-//             }
-//             return res.send(addedData)
-//         })
-//     }
-//     catch (error) {
-//         return res.send(error)
-//     }
-// })
+app.post('/nomics/:id', async (req, res) => {
+    try {
+        const coinId = req.params.id
+        let insertData = await getDataFromNomics(coinId)
+        console.log(insertData[0])
+        db.insert({ "data": insertData[0] }, async (error, addedData) => {
+            if (error) {
+                res.send(error)
+            }
+            return res.send(addedData)
+        })
+    }
+    catch (error) {
+        return res.send(error)
+    }
+})
 
 app.get('/', async (req, res) => {
     try {
@@ -53,8 +56,9 @@ app.get('/', async (req, res) => {
     }
 })
 
-app.post("/workingEndpoint", async (req, res) => {
+app.post("/blogs/add", async (req, res) => {
     try {
+        console.log(req.body)
         let title = req.body.title
         titleArray = title.split(" ")       //return ["my", "blogs1"]
         let author = req.body.author
@@ -70,7 +74,7 @@ app.post("/workingEndpoint", async (req, res) => {
             let body = req.body
             body.meta = meta
         }
-        console.log(body)
+
         db.insert(req.body, (error, addedUser) => {
             if (error) {
                 return res.send(error)
@@ -81,7 +85,7 @@ app.post("/workingEndpoint", async (req, res) => {
         })
     }
     catch (error) {
-        res.send(error)
+        res.send('something went wrong')
     }
 })
 
